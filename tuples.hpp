@@ -179,17 +179,16 @@ concept tuple_elements_convertible_to =
 
 
 template<std::size_t I, class T>
-concept tuple_index_for =
+concept is_index_for =
   tuple_like<T>
   and (I < std::tuple_size_v<std::remove_cvref_t<T>>)
 ;
 
 
-// XXX rename to are_indices_for
 template<class T, std::size_t... I>
-concept tuple_indices_for =
+concept are_indices_for =
   tuple_like<T>
-  and (... and tuple_index_for<I,T>)
+  and (... and is_index_for<I,T>)
 ;
 
 
@@ -516,7 +515,7 @@ namespace detail
 template<class F, std::size_t I, class... Tuples>
 concept invocable_on_element =
   (... and tuple_like<Tuples>)
-  and (... and tuple_index_for<I,Tuples>)
+  and (... and is_index_for<I,Tuples>)
   and requires(F f, Tuples... tuples)
   {
     f(get<I>(tuples)...);
@@ -525,7 +524,7 @@ concept invocable_on_element =
 
 
 template<class F, tuple_like... Tuples, std::size_t... I>
-  requires (... and tuple_indices_for<Tuples, I...>)
+  requires (... and are_indices_for<Tuples, I...>)
 constexpr bool is_invocable_elementwise_impl(std::index_sequence<I...>)
 {
   return (... and invocable_on_element<F,I,Tuples...>);
@@ -562,7 +561,7 @@ concept invocable_r_on_element =
 
 
 template<class R, class F, tuple_like... Tuples, std::size_t... I>
-  requires (... and tuple_indices_for<Tuples, I...>)
+  requires (... and are_indices_for<Tuples, I...>)
 constexpr bool is_invocable_r_elementwise_impl(std::index_sequence<I...>)
 {
   return (... and invocable_r_on_element<R,F,I,Tuples...>);
@@ -589,14 +588,14 @@ concept invocable_r_elementwise = is_invocable_r_elementwise<R,F,Tuples...>();
 
 
 template<std::size_t I, class F, tuple_like... Ts>
-  requires (... and tuple_indices_for<Ts,I>)
+  requires (... and are_indices_for<Ts,I>)
 constexpr decltype(auto) get_and_invoke(F&& f, Ts&&... ts)
 {
   return std::invoke(std::forward<F>(f), get<I>(std::forward<Ts>(ts))...);
 }
 
 template<std::size_t I, class F, tuple_like... Ts>
-  requires (... and tuple_indices_for<Ts,I>)
+  requires (... and are_indices_for<Ts,I>)
 using get_and_invoke_result_t = decltype(get_and_invoke<I>(std::declval<F>(), std::declval<Ts>()...));
 
 
@@ -1448,7 +1447,7 @@ constexpr tuple_like auto tuple_static_enumerate(const T& tuple, F&& f)
 
 
 template<std::size_t I, tuple_like T, class U>
-  requires tuple_index_for<I,T>
+  requires is_index_for<I,T>
 constexpr tuple_like auto tuple_replace_element(const T& tuple, const U& replacement)
 {
   return tuple_static_enumerate(tuple, [&]<std::size_t index>(const auto& t_i)
