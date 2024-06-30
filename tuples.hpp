@@ -102,7 +102,6 @@ namespace detail
 {
 
 
-// XXX tuple_of_indices would be unnecessary if std::index_sequence was itself a tuple-like
 template<std::size_t... I>
 constexpr auto tuple_of_indices_impl(std::index_sequence<I...>)
 {
@@ -112,8 +111,9 @@ constexpr auto tuple_of_indices_impl(std::index_sequence<I...>)
 } // end detail
 
 
+// XXX tuple_of_indices_v would be unnecessary if std::index_sequence was itself a tuple-like
 template<tuple_like T>
-constexpr std::tuple tuple_of_indices = detail::tuple_of_indices_impl(indices_v<T>);
+constexpr std::tuple tuple_of_indices_v = detail::tuple_of_indices_impl(indices_v<T>);
 
 
 namespace detail
