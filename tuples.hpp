@@ -637,7 +637,7 @@ constexpr auto tuple_zip_with_r(F&& f, T&& t, Ts&&... ts)
 
 
 template<class R, class F, class T, class... Ts>
-concept tuple_zipper_r = tuple_zipper<F,T,Ts...> and invocable_r_elementwise<R,F,T,Ts...>;
+concept tuple_zipper_r = tuple_zipper<F,T,Ts...> and detail::invocable_r_elementwise<R,F,T,Ts...>;
 
 
 namespace detail
@@ -752,7 +752,7 @@ template<tuple_like T, class F>
   requires tuple_zipper<F,T>
 constexpr tuple_like auto tuple_zip_with(T&& t, F&& f)
 {
-  return tuple_zip_with_r<tuple_similar_to<T&&>::template tuple>(std::forward<F>(f), std::forward<T>(t));
+  return tuple_zip_with_r<detail::tuple_similar_to<T&&>::template tuple>(std::forward<F>(f), std::forward<T>(t));
 }
 
 // 2-argument tuple_zip_with
@@ -760,7 +760,7 @@ template<tuple_like T1, tuple_like T2, class F>
   requires tuple_zipper<F,T1,T2>
 constexpr tuple_like auto tuple_zip_with(T1&& t1, T2&& t2, F&& f)
 {
-  return tuple_zip_with_r<tuple_similar_to<T1&&>::template tuple>(std::forward<F>(f), std::forward<T1>(t1), std::forward<T2>(t2));
+  return tuple_zip_with_r<detail::tuple_similar_to<T1&&>::template tuple>(std::forward<F>(f), std::forward<T1>(t1), std::forward<T2>(t2));
 }
 
 // 3-argument tuple_zip_with
@@ -768,7 +768,7 @@ template<tuple_like T1, tuple_like T2, tuple_like T3, class F>
   requires tuple_zipper<F,T1,T2,T3>
 constexpr tuple_like auto tuple_zip_with(T1&& t1, T2&& t2, T3&& t3, F&& f)
 {
-  return tuple_zip_with_r<tuple_similar_to<T1&&>::template tuple>(std::forward<F>(f), std::forward<T1>(t1), std::forward<T2>(t2), std::forward<T3>(t3));
+  return tuple_zip_with_r<detail::tuple_similar_to<T1&&>::template tuple>(std::forward<F>(f), std::forward<T1>(t1), std::forward<T2>(t2), std::forward<T3>(t3));
 }
 
 // 4-argument tuple_zip_with
@@ -776,12 +776,12 @@ template<tuple_like T1, tuple_like T2, tuple_like T3, tuple_like T4, class F>
   requires tuple_zipper<F,T1,T2,T3,T4>
 constexpr tuple_like auto tuple_zip_with(T1&& t1, T2&& t2, T3&& t3, T4&& t4, F&& f)
 {
-  return tuple_zip_with_r<tuple_similar_to<T1&&>::template tuple>(std::forward<F>(f), std::forward<T1>(t1), std::forward<T2>(t2), std::forward<T3>(t3), std::forward<T4>(t4));
+  return tuple_zip_with_r<detail::tuple_similar_to<T1&&>::template tuple>(std::forward<F>(f), std::forward<T1>(t1), std::forward<T2>(t2), std::forward<T3>(t3), std::forward<T4>(t4));
 }
 
 
 template<class F, tuple_like T, tuple_like... Ts>
-  requires (same_tuple_size<T,Ts...> and invocable_elementwise<F&&,T&&,Ts&&...>)
+  requires (same_tuple_size<T,Ts...> and detail::invocable_elementwise<F&&,T&&,Ts&&...>)
 using tuple_zip_with_result_t = decltype(tuple_zip_with(std::declval<T>(), std::declval<Ts>()..., std::declval<F>()));
 
 
@@ -1402,7 +1402,7 @@ namespace detail
 {
 
 
-template<ubu::detail::tuple_like T, class F, std::size_t... I>
+template<tuple_like T, class F, std::size_t... I>
 constexpr auto unpack_and_invoke_impl(T&& arg, F&& f, std::index_sequence<I...>)
 {
   return std::invoke(std::forward<F>(f), get<I>(std::forward<T>(arg))...);
@@ -1412,7 +1412,7 @@ constexpr auto unpack_and_invoke_impl(T&& arg, F&& f, std::index_sequence<I...>)
 } // end detail
 
 
-template<ubu::detail::tuple_like T, class F>
+template<tuple_like T, class F>
 constexpr auto unpack_and_invoke(T&& args, F&& f)
 {
   auto indices = tuple_indices<T>;
