@@ -1,2 +1,2 @@
 # tuples
-Standalone C++20 library of concepts and algorithms for tuples and `tuple_like` types.
+Standalone C++20 library of concepts and algorithms for tuples and other `tuple_like` types.
